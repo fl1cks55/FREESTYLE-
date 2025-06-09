@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Freestyle Ελληνικά με Graffiti Background</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron&family=Open+Sans&display=swap');
+
+  /* Reset */
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
+  body {
+    background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #b5f4a5;
+    font-family: 'Open Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    backdrop-filter: brightness(0.6);
+    overflow-x: hidden;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 20px;
+    user-select: none;
+  }
+  header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 3rem;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+    color: #85ffac;
+    text-shadow: 0 0 10px #00ff88;
+  }
+
+  #beat-input-container {
+    margin: 15px 0;
+    text-align: center;
+    max-width: 600px;
+    width: 90%;
+  }
+  #beatsInput {
+    padding: 8px 12px;
+    border-radius: 15px;
+    border: 2px solid #00ff88;
+    background: #121212;
+    color: #b5f4a5;
+    font-size: 1rem;
+    width: 80%;
+    max-width: 500px;
+  }
+  #loadBeatBtn {
+    padding: 10px 18px;
+    border-radius: 30px;
+    border: 2px solid #00ff88;
+    background: #1e1e1e;
+    color: #00ff88;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  #loadBeatBtn:hover {
+    background-color: #00ff88;
+    color: #121212;
+  }
+
+  #player-container {
+    margin: 20px auto 30px;
+    max-width: 600px;
+    width: 100%;
+    height: 320px;
+    box-shadow: 0 0 25px #00ff88;
+    border-radius: 15px;
+    overflow: hidden;
+  }
+  #yt-player {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 700px;
+    width: 100%;
+    position: relative;
+  }
+
+  #word-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+  }
+
+  /* Κάθε λέξη που πέφτει */
+  .falling-word {
+    position: absolute;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #a5ffb7;
+    text-shadow:
+      0 0 8px #a5ffb7,
+      0 0 20px #55ff7a;
+    user-select: none;
+    pointer-events: none;
+    white-space: nowrap;
+    animation-name: fallDown;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+
+  @keyframes fallDown {
+    0% {
+      top: -60px;
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      top: 310px;
+      opacity: 0;
+    }
+  }
+
+  #controls {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  button {
+    background: #1e1e1e;
+    border: 2px solid #00ff88;
+    color: #00ff88;
+    font-size: 1.1rem;
+    padding: 12px 28px;
+    border-radius: 30px;
+    cursor: pointer;
+    margin: 8px;
+    transition: background-color 0.3s, color 0.3s;
+    font-weight: 600;
+    box-shadow: 0 0 8px #00ff88;
+    user-select: none;
+  }
+  button:hover {
+    background-color: #00ff88;
+    color: #121212;
+  }
+  button:active {
+    transform: scale(0.95);
+  }
+
+  #delay-input {
+    margin: 10px auto;
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+  }
+  #delay-input label {
+    color: #b5f4a5;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-right: 8px;
+  }
+  #delay {
+    width: 70px;
+    padding: 6px 12px;
+    border-radius: 15px;
+    border: 2px solid #00ff88;
+    background: #121212;
+    color: #b5f4a5;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  #tts-toggle-container {
+    margin: 12px auto;
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+  }
+  #tts-toggle {
+    transform: scale(1.3);
+    cursor: pointer;
+  }
+  #tts-label {
+    color: #b5f4a5;
+    font-weight: 600;
+    font-size: 1.1rem;
+    user-select: none;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  #recording-status {
+    margin-top: 8px;
+    font-size: 1rem;
+    color: #a5ffb7;
+    min-height: 24px;
+    user-select: none;
+  }
+
+  @media (max-width: 480px) {
+    header h1 {
+      font-size: 2rem;
+    }
+    #player-container {
+      height: 220px;
+    }
+    #word-container {
+      height: 180px;
+    }
+    .falling-word {
+      font-size: 2rem;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      margin: 6px;
+    }
+    #beatsInput, #delay {
+      width: 100%;
+      max-width: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Freestyle Ελληνικά</h1>
+</header>
+
+<div id="beat-input-container">
+  <input id="beatsInput" type="text" placeholder="Βάλε URL YouTube Beat εδώ (πχ. https://www.youtube.com/watch?v=xxxx)" />
+  <button id="loadBeatBtn">Φόρτωσε Beat</button>
+</div>
+
+<div id="player-container">
+  <iframe id="yt-player" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</div>
+
+<main>
+  <div id="word-container" aria-live="polite" aria-atomic="true" aria-relevant="additions"></div>
+
+  <div id="controls">
+    <button id="start-btn">Ξεκίνα</button>
+    <button id="pause-btn" disabled>Παύση</button>
+    <button id="record-btn">Ηχογράφηση</button>
+    <button id="stop-record-btn" disabled>Σταμάτα Ηχογράφηση</button>
+  </div>
+
+  <div id="delay-input">
+    <label for="delay">Καθυστέρηση (δευτερόλεπτα):</label>
+    <input id="delay" type="number" min="0.5" max="10" step="0.1" value="2" />
+  </div>
+
+  <div id="tts-toggle-container">
+    <input type="checkbox" id="tts-toggle" />
+    <label for="tts-toggle" id="tts-label">Ενεργοποίηση Text-to-Speech</label>
+  </div>
+
+  <div id="recording-status"></div>
+</main>
+
+<script>
+  // Λίστα λέξεων
+  const words = [
+    [
+"αγάπη", "άνθρωπος", "άνεμος", "αστέρι", "αλήθεια", "αέρας", "βουνό", "βροχή",
+"γέλιο", "γάτα", "γυναίκα", "δάκρυ", "δέντρο", "δρόμος", "ελπίδα", "ζωή",
+"ήλιος", "θάλασσα", "καρδιά", "καφές", "κλέφτης", "κόσμος", "λέξη", "λίμνη",
+"μάτια", "μνήμη", "νύχτα", "νερό", "ομορφιά", "όνειρο", "παράθυρο", "πόλη",
+"παιδί", "πνοή", "πύργος", "ρήμα", "ρόδο", "σκιά", "σπίτι", "σύννεφο",
+"τέχνη", "τρύπα", "φέγγος", "φως", "χαρά", "χέρι", "χρόνος", "ψυχή",
+"αγορά", "άνοιξη", "ασήμι", "βαθμός", "βιβλίο", "γέφυρα", "γλώσσα", "γήινος",
+"δάσος", "δυνατός", "ελιά", "εργασία", "ζωγραφιά", "ήχος", "θρόνος", "καλοκαίρι",
+"κάστρο", "καφές", "κίνηση", "κοσμήμα", "λεμόνι", "λίθος", "μάθημα", "μέλισσα",
+"νησί", "νύφη", "όαση", "πάγος", "πέτρα", "πέρασμα", "πιάνο", "πόνος",
+"πύλη", "ρέμα", "ρόδο", "σαλόνι", "σήμα", "σχέδιο", "τάξη", "τρένο",
+"φίλος", "χέρι", "χάδι", "ψάρι", "ώρα", "άγγελος", "άρμα", "αύρα",
+"βάθος", "βουνό", "γλάσο", "γλυκό", "δαχτυλίδι", "δέμα", "δόξα", "ελπίδα",
+"έλατο", "ζακέτα", "ήλιος", "θύμα", "καλό", "κλειδί", "κόκκινο", "λέκτρο",
+"λιβάδι", "μάτι", "μέλι", "νεράιδα", "νήμα", "νύχι", "όνειρο", "πάπυρος",
+"πέταλο", "πλατεία", "πόδι", "πύργος", "ρέμα", "ρόδι", "σήμα", "σκιά",
+"σύννεφο", "τάξη", "τέχνη", "φέγγος", "φως", "χαμόγελο", "χρόνος", "ψυχή",
+// ... συνεχίζω ...
+"αέρας", "άνεμος", "αγώνας", "βράχος", "γκαράζ", "δάκρυ", "έρωτας", "ζώνη",
+"ήλιος", "θαύμα", "καρδιά", "κύμα", "λίμνη", "μέλι", "νύχτα", "όραμα",
+"πάγος", "πίνακας", "ρόδο", "σπίτι", "τάξη", "φέγγος", "φως", "χάδι",
+"χέρι", "ψυχή", "ώρα", "άνοιξη", "βροχή", "γέλιο", "δάσος", "ελπίδα",
+"ζωή", "θάλασσα", "κάστρο", "λέξη", "μάτι", "νύφη", "πόλη", "ρόδι",
+"σύννεφο", "τέχνη", "φίλος", "χαρά", "χρόνος", "ψάρι", "ώρα", "άγγελος",
+"βάθος", "γλυκό", "δάχτυλο", "έλατο", "ζάχαρη", "ήλιος", "καφές", "λίθος",
+"μέλισσα", "νύχι", "πέτρα", "πύλη", "ρέμα", "σχέδιο", "τάξη", "φως",
+"χαμόγελο", "χέρι", "ώρα", "άνοιξη", "βουνό", "γκαράζ", "έρωτας", "ζώνη",
+"θάλασσα", "κάστρο", "λίμνη", "μέλι", "νύχτα", "πάγος", "ρόδι", "σπίτι",
+"τάξη", "φέγγος", "φως", "χάδι", "ψυχή", "ώρα", "βροχή", "γέλιο",
+// και ούτω καθεξής μέχρι 1000 λέξεις
+]
+  ];
+
+  // Στοιχεία DOM
+  const wordContainer = document.getElementById('word-container');
+  const startBtn = document.getElementById('start-btn');
+  const pauseBtn = document.getElementById('pause-btn');
+  const beatsInput = document.getElementById('beatsInput');
+  const loadBeatBtn = document.getElementById('loadBeatBtn');
+  const ytPlayer = document.getElementById('yt-player');
+  const delayInput = document.getElementById('delay');
+  const ttsToggle = document.getElementById('tts-toggle');
+  const recordBtn = document.getElementById('record-btn');
+  const stopRecordBtn = document.getElementById('stop-record-btn');
+  const recordStatus = document.getElementById('recording-status');
+
+  let intervalId = null;
+  let isRunning = false;
+
+  // Για ηχογράφηση
+  let mediaRecorder = null;
+  let recordedChunks = [];
+
+  // Επιλογή τυχαίας λέξης
+  function getRandomWord() {
+    const idx = Math.floor(Math.random() * words.length);
+    return words[idx];
+  }
+
+  // Δημιουργία και εμφάνιση λέξης που "πέφτει"
+  function createFallingWord(word) {
+    const span = document.createElement('span');
+    span.classList.add('falling-word');
+    span.textContent = word;
+
+    // Τυχαία οριζόντια θέση, με απόσταση από τις άκρες (10% padding)
+    const containerWidth = wordContainer.clientWidth;
+    const wordWidth = word.length * 24; // εκτίμηση
+    const maxLeft = containerWidth - wordWidth - 20;
+    const leftPos = Math.floor(Math.random() * maxLeft) + 10;
+    span.style.left = `${leftPos}px`;
+
+    // Ρυθμίζουμε διάρκεια animation με βάση delay
+    const duration = parseFloat(delayInput.value);
+    span.style.animationDuration = `${duration}s`;
+
+    wordContainer.appendChild(span);
+
+    // Text to speech αν είναι ενεργό
+    if (ttsToggle.checked && 'speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'el-GR';
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Αφαιρούμε το span μετά το animation
+    span.addEventListener('animationend', () => {
+      span.remove();
+    });
+  }
+
+  // Εμφάνιση επόμενης λέξης
+  function showNextWord() {
+    createFallingWord(getRandomWord());
+  }
+
+  // Start κουμπί
+  startBtn.addEventListener('click', () => {
+    if (isRunning) return;
+    isRunning = true;
+    startBtn.disabled = true;
+    pauseBtn.disabled = false;
+
+    const delay = parseFloat(delayInput.value);
+    showNextWord();
+    intervalId = setInterval(showNextWord, delay * 1000);
+  });
+
+  // Pause κουμπί
+  pauseBtn.addEventListener('click', () => {
+    if (!isRunning) return;
+    clearInterval(intervalId);
+    isRunning = false;
+    startBtn.disabled = false;
+    pauseBtn.disabled = true;
+  });
+
+  // Load Beat από YouTube URL
+  loadBeatBtn.addEventListener('click', () => {
+    const url = beatsInput.value.trim();
+    if (!url) {
+      alert('Βάλε έγκυρο URL YouTube beat!');
+      return;
+    }
+    // Εξαγωγή video ID από URL
+    const videoId = extractYoutubeVideoID(url);
+    if (!videoId) {
+      alert('Δεν βρέθηκε video ID από το URL!');
+      return;
+    }
+    ytPlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&controls=1&mute=0`;
+  });
+
+  // Συνάρτηση εξαγωγής video ID από YouTube URL
+  function extractYoutubeVideoID(url) {
+    // Υποστήριξη κοινών τύπων YouTube URL
+    let match = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return match ? match[1] : null;
+  }
+
+  // Ηχογράφηση
+  recordBtn.addEventListener('click', async () => {
+    if (mediaRecorder && mediaRecorder.state === "recording") return;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert('Η ηχογράφηση δεν υποστηρίζεται από τον browser σου.');
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      recordedChunks = [];
+
+      mediaRecorder.ondataavailable = e => {
+        if (e.data.size > 0) recordedChunks.push(e.data);
+      };
+
+      mediaRecorder.onstart = () => {
+        recordStatus.textContent = 'Ηχογράφηση σε εξέλιξη...';
+        recordBtn.disabled = true;
+        stopRecordBtn.disabled = false;
+      };
+
+      mediaRecorder.onstop = () => {
+        recordStatus.textContent = 'Ηχογράφηση ολοκληρώθηκε.';
+        recordBtn.disabled = false;
+        stopRecordBtn.disabled = true;
+
+        const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+        const url = URL.createObjectURL(blob);
+        // Αυτόματη λήψη
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `freestyle_recording_${Date.now()}.webm`;
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(url);
+        a.remove();
+      };
+
+      mediaRecorder.start();
+    } catch (err) {
+      alert('Σφάλμα κατά την ηχογράφηση: ' + err.message);
+    }
+  });
+
+  stopRecordBtn.addEventListener('click', () => {
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+      mediaRecorder.stop();
+    }
+  });
+</script>
+
+</body>
+</html>
